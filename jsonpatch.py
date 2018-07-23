@@ -430,7 +430,16 @@ class AddOperation(PatchOperation):
             if part is None:
                 obj = value  # we're replacing the root
             else:
-                subobj[part] = value
+                if part in subobj:
+                    #this is the case when element was added in 2 versions of the document separetely
+                    #see https://jira.prozorro.org/browse/CS-111
+                    if isinstance(subobj[part], MutableSequence) and isinstance(value, MutableSequence):
+                        #merge two arrays together
+                        subobj[part] += value
+                    else:
+                        subobj[part] = value
+                else:
+                    subobj[part] = value
 
         else:
             raise TypeError("invalid document type {0}".format(type(subobj)))
