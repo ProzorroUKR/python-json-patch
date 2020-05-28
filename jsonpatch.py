@@ -37,7 +37,6 @@ from __future__ import unicode_literals
 import collections
 import copy
 import functools
-import inspect
 import itertools
 import json
 import sys
@@ -51,7 +50,7 @@ from jsonpointer import JsonPointer, JsonPointerException
 
 # Will be parsed by setup.py to determine package metadata
 __author__ = 'Stefan Kögl <stefan@skoegl.net>'
-__version__ = '1.9'
+__version__ = '1.14-dp'
 __website__ = 'https://github.com/stefankoegl/python-json-patch'
 __license__ = 'Modified BSD License'
 
@@ -97,19 +96,9 @@ def multidict(ordered_pairs):
 
 
 def get_loadjson():
-    """ adds the object_pairs_hook parameter to json.load when possible
-
-    The "object_pairs_hook" parameter is used to handle duplicate keys when
-    loading a JSON object. This parameter does not exist in Python 2.6. This
-    methods returns an unmodified json.load for Python 2.6 and a partial
-    function with object_pairs_hook set to multidict for Python versions that
-    support the parameter. """
-
-    argspec = inspect.getargspec(json.load)
-    if 'object_pairs_hook' not in argspec.args:
-        return json.load
-
+    """ adds the object_pairs_hook parameter to json.load """
     return functools.partial(json.load, object_pairs_hook=multidict)
+
 
 json.load = get_loadjson()
 
